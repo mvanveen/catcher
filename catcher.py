@@ -1,7 +1,7 @@
 import traceback
 
 
-trace_stack = []
+TRACE_STACK = []
 
 class Trace(object):
     def __init__(self, exception, stack=None):
@@ -40,12 +40,15 @@ class Trace(object):
             type(self.exception).replace('exceptions.', ''), 
         )
 
-
 def catch(e):
-    trace_stack.append(Trace(e))
+    TRACE_STACK.append(Trace(e))
 
 def dump(exception_type=None, lineno=None, module=None):
-    return trace_stack
+    return TRACE_STACK
+
+def clear():
+    del TRACE_STACK
+    TRACE_STACK = []
 
 if __name__ == '__main__':
     import random
