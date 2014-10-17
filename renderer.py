@@ -6,6 +6,13 @@ from pygments.formatters import HtmlFormatter
 
 import catcher
 
+def render_to_file():
+    print '<style>'
+    print HtmlFormatter().get_style_defs('.highlight')
+    print '</style>'
+
+    for item in render():
+        print item
 
 def render():
     items = catcher.dump()
@@ -20,9 +27,4 @@ if __name__ == '__main__':
         except Exception, e:
             catcher.catch(e)
 
-    print '<style>'
-    print HtmlFormatter().get_style_defs('.highlight')
-    print '</style>'
-
-    for item in render():
-        print item
+    render_to_file()
