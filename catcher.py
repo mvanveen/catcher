@@ -11,8 +11,8 @@ class Trace(object):
 	if not stack:
 	    stack = traceback.extract_stack()
             # pop off current frame and initial catch frame
-	    stack.pop()
-            stack.pop() 
+	    #stack.pop()
+            #stack.pop() 
 
 	# TODO: try to grab exception if it's not passed in explicitly
         self._exception = exception
@@ -37,7 +37,7 @@ class Trace(object):
 
     def __repr__(self):
         return '<Trace (%s)>' % (
-            type(self.exception).replace('exceptions.', ''), 
+            str(type(self.exception)).replace('exceptions.', ''), 
         )
 
 def catch(e):
