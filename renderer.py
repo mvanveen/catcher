@@ -15,16 +15,27 @@ def render_to_file():
         print item
 
 def render():
-    items = catcher.dump()
+    items, count = catcher.dump()
+    visited = {}
     for item in items:
-        yield highlight(str(item), PythonTracebackLexer(), HtmlFormatter())
+        _hash = item.hash()
+        if not visited.get(_hash):
+           yield '<div><p>count: %s</p></div>' % (count[_hash], ) + highlight(
+             str(item),
+             PythonTracebackLexer(),
+             HtmlFormatter()
+           )
+           visited[_hash] = True
 
 if __name__ == '__main__':
     import random
     for i in range(20):
         try:
-            random.randint(0,5) / 0
+            if random.randint(2, 5) > 3:
+		sadfasdf(saf)
+            else:
+		2 / 0
         except Exception, e:
             catcher.catch(e)
-
+    catcher.dump()
     render_to_file()

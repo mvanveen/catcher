@@ -1,39 +1,40 @@
+from collections import defaultdict
+import hashlib
+import sys
 import traceback
 
-
 TRACE_STACK = []
+TRACE_COUNTER = defaultdict(int)
 
 class Trace(object):
-    def __init__(self, exception, stack=None):
-	if not isinstance(exception, Exception):
-	    raise ValueError("Expected an Exception object as first argument")
-
-	if not stack:
-	    stack = traceback.extract_stack()
-            # pop off current frame and initial catch frame
-	    #stack.pop()
-            #stack.pop() 
+    def __init__(self, exception_type, exception, traceback):
+	#if not isinstance(exception, Exception):
+	#    raise ValueError("Expected an Exception object as first argument")
 
 	# TODO: try to grab exception if it's not passed in explicitly
         self._exception = exception
-	self._stack = stack
+        self._traceback = traceback
+	#self._stack = stack
 
     @property
     def exception(self):
         return self._exception
 
     @property
-    def stack(self):
-        return self._stack
+    def traceback(self):
+        return self._traceback
+
+    def hash(self):
+        return hashlib.sha1(str(self)).hexdigest()
 
     def __str__(self):
-        return ''.join(
-            traceback.format_list(self.stack) +
-	    traceback.format_exception_only(
-              type(self.exception),
-              self.exception
+	return ''.join(
+	    traceback.format_exception(
+                type(self.exception),
+                self.exception,
+                self.traceback
             )
-	).strip()
+         ).strip()
 
     def __repr__(self):
         return '<Trace (%s)>' % (
@@ -41,14 +42,18 @@ class Trace(object):
         )
 
 def catch(e):
-    TRACE_STACK.append(Trace(e))
+    trace = Trace(*sys.exc_info())
+    TRACE_STACK.append(trace)
+    TRACE_COUNTER[trace.hash()] += 1
 
 def dump(exception_type=None, lineno=None, module=None):
-    return TRACE_STACK
+    return TRACE_STACK, TRACE_COUNTER
 
 def clear():
     del TRACE_STACK
+    del TRACE_COUNTER
     TRACE_STACK = []
+    TRACE_COUNTER = default_dict(int)
 
 if __name__ == '__main__':
     import random
@@ -58,4 +63,4 @@ if __name__ == '__main__':
         except Exception, e:
             catch(e)
 
-    print str(dump()[0])
+    print dump()
